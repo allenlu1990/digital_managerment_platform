@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.performance.mapper.PerforEvaluateMapper">
+  <resultMap type="PerforApproveTask" id="PerforApproveTaskResult">
+    <result property="id" column="id"/>
+    <result property="approverId" column="approver_id"/>
+    <result property="approverRank" column="approver_rank"/>
+    <result property="result" column="result"/>
+    <result property="applicationId" column="application_id"/>
+    <result property="applicationTitle" column="application_title"/>
+    <result property="ownerId" column="owner_id"/>
+    <result property="ownerName" column="user_name"/>
+    <result property="applicationContent" column="application_content"/>
+    <result property="applicationDate" column="application_date"/>
+    <result property="applicationPercentage" column="application_percentage"/>
+    <result property="status" column="status"/>
+    <result property="createBy" column="create_by"/>
+    <result property="createTime" column="create_time"/>
+    <result property="updateBy" column="update_by"/>
+    <result property="updateTime" column="update_time"/>
+    <result property="remark" column="remark"/>
+  </resultMap>
+
+  <resultMap type="OwnersInfo" id="OwnersInfoResult">
+    <result property="userId" column="user_id"/>
+    <result property="userName" column="user_name"/>
+    <result property="deptName" column="dept_name"/>
+  </resultMap>
+
+  <sql id="selectPerforEvaluateVo">
+        select a.id,a.remark, a.approver_id, a.approver_rank, a.result, p.application_id, p.application_title, p.owner_id, p.application_content,p.application_date, p.application_percentage, p.status, p.create_by, p.create_time, p.update_by, p.update_time, p.remark,u.user_name
+          from performance_approve_task a left join performance_application p on a.application_id =  p.application_id
+              left join sys_user u on p.owner_id = u.user_id
+  </sql>
+
+  <select id="selectPerforApproveTaskList" parameterType="PerforApproveTask" resultMap="PerforApproveTaskResult">
+    <include refid="selectPerforEvaluateVo"/>
+    <where>
+      <if test="approverId != null ">and a.approver_id = #{approverId}</if>
+      <if test="ownerId != null ">and p.owner_id = #{ownerId}</if>
+      <if test="applicationDate != null ">
+        <![CDATA[   AND DATE_FORMAT(p.application_date, '%Y-%m') = DATE_FORMAT(#{applicationDate}, '%Y-%m')   ]]>
+      </if>
+    </where>
+  </select>
+
+  <insert id="insertPerforApproveTask" parameterType="PerforApproveTask" useGeneratedKeys="true" keyProperty="id">
+    insert into performance_approve_task
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="approverId != null ">approver_id,</if>
+      <if test="applicationId != null ">application_id,</if>
+      <if test="approverRank != null ">approver_rank,</if>
+      <if test="result != null  and result != ''">result,</if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="approverId != null ">#{approverId},</if>
+      <if test="applicationId != null ">#{applicationId},</if>
+      <if test="approverRank != null ">#{approverRank},</if>
+      <if test="result != null  and result != ''">#{result},</if>
+    </trim>
+  </insert>
+
+  <update id="updatePerforApproveTask" parameterType="PerforApproveTask">
+    <!--update performance_approve_task-->
+    <!--<trim prefix="SET" suffixOverrides=",">-->
+      <!--&lt;!&ndash;<if test="approverId != null ">approver_id = #{approverId},</if>&ndash;&gt;-->
+      <!--&lt;!&ndash;<if test="applicationId != null ">application_id = #{applicationId},</if>&ndash;&gt;-->
+      <!--<if test="result != null  and result != ''">result = #{result},</if>-->
+      <!--<if test="remark != null  and remark != ''">remark = #{remark},</if>-->
+    <!--</trim>-->
+    <!--where id = #{id}-->
+    update performance_approve_task
+    set result = #{result},remark = #{remark}
+    where id = #{id}
+  </update>
+
+  <delete id="deletePerforApproveTaskById" parameterType="Long">
+        delete from performance_approve_task where id = #{id}
+    </delete>
+
+  <delete id="deletePerforApproveTaskByIds" parameterType="String">
+    delete from performance_approve_task where id in
+    <foreach item="id" collection="array" open="(" separator="," close=")">
+      #{id}
+    </foreach>
+  </delete>
+
+  <select id="getTaskOwners" parameterType="PerforApproveTask" resultMap="OwnersInfoResult">
+    select u.user_id, u.user_name , d.dept_name from
+    (select distinct a.owner_id from performance_approve_task t left join performance_application a on t.application_id
+    = a.application_id
+    <where>
+      <if test="approverId != null ">and approver_id = #{approverId}</if>
+    </where>
+    ) as tmp
+    left join sys_user u on tmp.owner_id = u.user_id left join sys_dept d on u.dept_id = d.dept_id
+  </select>
+
+  <select id="selectCorrelateIds" parameterType="Long" resultType="Long">
+    select leader_id from sys_user_leader where user_id = #{0}
+  </select>
+
+  <select id="selectReverseCorrelateIds" parameterType="Long" resultType="Long">
+    select user_id from sys_user_leader where leader_id = #{0}
+  </select>
+
+  <insert id="insertPerforApproveTaskBatch" parameterType="java.util.List">
+    insert into performance_approve_task(approver_id,application_id,approver_rank)
+    values
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.approverId,jdbcType=BIGINT}, #{item.applicationId,jdbcType=BIGINT},#{item.approverRank,jdbcType=INTEGER})
+    </foreach>
+  </insert>
+
+  <select id="selectPerforEvaluateByApplicationId" parameterType="Long" resultMap="PerforApproveTaskResult">
+    <include refid="selectPerforEvaluateVo"/>
+    where a.application_id = #{0}
+  </select>
+
+  <delete id="deleteEvaluateByApplicationId" parameterType="Long">
+    delete from performance_approve_task where application_id = #{0}
+  </delete>
+
+</mapper>
+
+
+

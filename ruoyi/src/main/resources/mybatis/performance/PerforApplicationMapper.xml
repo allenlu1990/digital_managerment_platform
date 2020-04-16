@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.performance.mapper.PerforApplicationMapper">
+
+  <resultMap type="PerforApplication" id="PerforApplicationResult">
+    <result property="applicationId" column="application_id"/>
+    <result property="applicationTitle" column="application_title"/>
+    <result property="ownerId" column="owner_id"/>
+    <result property="ownerName" column="user_name"/>
+    <result property="applicationContent" column="application_content"/>
+    <result property="applicationDate" column="application_date"/>
+    <result property="applicationPercentage" column="application_percentage"/>
+    <result property="status" column="status"/>
+    <result property="createBy" column="create_by"/>
+    <result property="createTime" column="create_time"/>
+    <result property="updateBy" column="update_by"/>
+    <result property="updateTime" column="update_time"/>
+    <result property="remark" column="remark"/>
+  </resultMap>
+
+  <sql id="selectApplicationVo">
+        select p.application_id, p.application_title, p.owner_id, p.application_content, p.application_percentage, p.application_date, p.status, p.create_by, p.create_time, p.update_by, p.update_time, p.remark,u.user_name
+		from performance_application p left join sys_user u on p.owner_id = u.user_id
+    </sql>
+
+  <select id="selectApplicationById" parameterType="Long" resultMap="PerforApplicationResult">
+    <include refid="selectApplicationVo"/>
+    where application_id = #{applicationId}
+  </select>
+
+  <select id="selectApplicationList" parameterType="PerforApplication" resultMap="PerforApplicationResult">
+    <include refid="selectApplicationVo"/>
+    <where>
+      <if test="ownerId != null and ownerId != ''">
+        AND p.owner_id = #{ownerId}
+      </if>
+      <if test="applicationDate != null ">
+        <![CDATA[   AND DATE_FORMAT(p.application_date, '%Y-%m') = DATE_FORMAT(#{applicationDate}, '%Y-%m')   ]]>
+      </if>
+      <if test="createBy != null and createBy != ''">
+        AND p.create_by like concat('%', #{createBy}, '%')
+      </if>
+      <if test="applicationTitle != null and applicationTitle != ''">
+        AND p.application_title like concat('%', #{applicationTitle}, '%')
+      </if>
+    </where>
+  </select>
+
+  <insert id="insertApplication" useGeneratedKeys="true" keyProperty="applicationId" parameterType="PerforApplication">
+    insert into performance_application (
+    <if test="applicationTitle != null and applicationTitle != '' ">application_title,</if>
+    <if test="ownerId != null and ownerId != '' ">owner_id,</if>
+    <if test="applicationContent != null and applicationContent != '' ">application_content,</if>
+    <if test="applicationDate != null ">application_date,</if>
+    <if test="applicationPercentage != null ">application_percentage,</if>
+    <if test="status != null and status != '' ">status,</if>
+    <if test="remark != null and remark != ''">remark,</if>
+    <if test="createBy != null and createBy != ''">create_by,</if>
+    create_time
+    )values(
+    <if test="applicationTitle != null and applicationTitle != '' ">#{applicationTitle},</if>
+    <if test="ownerId != null and ownerId != '' ">#{ownerId},</if>
+    <if test="applicationContent != null and applicationContent != '' ">#{applicationContent},</if>
+    <if test="applicationDate != null ">#{applicationDate},</if>
+    <if test="applicationPercentage != null ">#{applicationPercentage},</if>
+    <if test="status != null and status != ''">#{status},</if>
+    <if test="remark != null and remark != ''">#{remark},</if>
+    <if test="createBy != null and createBy != ''">#{createBy},</if>
+    sysdate()
+    )
+  </insert>
+
+  <update id="updateApplication" parameterType="PerforApplication">
+    update performance_application
+    <set>
+      <if test="applicationTitle != null and applicationTitle != ''">application_title = #{applicationTitle},</if>
+      <if test="ownerId != null and ownerId != ''">owner_id = #{ownerId},</if>
+      <if test="applicationContent != null">application_content = #{applicationContent},</if>
+      <if test="applicationDate != null ">application_date = #{applicationDate},</if>
+      <if test="applicationPercentage != null ">application_percentage = #{applicationPercentage},</if>
+      <if test="status != null and status != ''">status = #{status},</if>
+      <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+      update_time = sysdate()
+    </set>
+    where application_id = #{applicationId}
+  </update>
+
+  <delete id="deleteApplicationById" parameterType="Long">
+        delete from performance_application where application_id = #{applicationId}
+  </delete>
+
+</mapper>

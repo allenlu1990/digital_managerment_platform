@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.performance.mapper.PerforNormalMapper">
+
+  <resultMap type="NormalTask" id="NormalTaskResult">
+    <result property="id" column="id"/>
+    <result property="result" column="result"/>
+    <result property="type" column="type"/>
+    <result property="ownerId" column="owner_id"/>
+    <result property="reason" column="reason"/>
+    <result property="date" column="date"/>
+    <result property="createBy" column="create_by"/>
+    <result property="createTime" column="create_time"/>
+  </resultMap>
+
+  <sql id="selectResultVo">
+      select type,date,owner_id,result,reason,create_by,create_time from performance_normal_task
+  </sql>
+
+  <select id="selectPerforNormalTasks" resultMap="NormalTaskResult">
+    <include refid="selectResultVo"/>
+    <where>
+        AND type = #{type}
+        <![CDATA[   AND DATE_FORMAT(date, '%Y-%m') = DATE_FORMAT(#{date}, '%Y-%m')   ]]>
+    </where>
+  </select>
+
+  <insert id="insertNormalTasks" parameterType="java.util.List">
+    insert into performance_normal_task(type,date,owner_id,result,reason,create_by)
+    values
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.type,jdbcType=BIGINT}, #{item.date,jdbcType=DATE},#{item.ownerId,jdbcType=BIGINT},
+      #{item.result,jdbcType=VARCHAR}, #{item.reason,jdbcType=VARCHAR},#{item.createBy,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+
+  <delete id="deleteNormalTasks">
+    delete from performance_normal_task
+    where
+     type = #{type}
+    <![CDATA[   AND DATE_FORMAT(date, '%Y-%m') = DATE_FORMAT(#{date}, '%Y-%m')   ]]>
+  </delete>
+
+</mapper>

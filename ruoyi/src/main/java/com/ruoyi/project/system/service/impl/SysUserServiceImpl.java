@@ -2,6 +2,9 @@ package com.ruoyi.project.system.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.ruoyi.project.system.domain.SysUserLeader;
+import com.ruoyi.project.system.mapper.SysUserLeaderMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +55,9 @@ public class SysUserServiceImpl implements ISysUserService
 
     @Autowired
     private ISysConfigService configService;
+
+    @Autowired
+    private SysUserLeaderMapper userLeaderMapper;
 
     /**
      * 根据条件分页查询用户列表
@@ -216,6 +222,8 @@ public class SysUserServiceImpl implements ISysUserService
         insertUserPost(user);
         // 新增用户与角色管理
         insertUserRole(user);
+        // 新增用户与领导关联
+        insertUserLeader(user);
         return rows;
     }
 
@@ -238,6 +246,8 @@ public class SysUserServiceImpl implements ISysUserService
         userPostMapper.deleteUserPostByUserId(userId);
         // 新增用户与岗位管理
         insertUserPost(user);
+        // 更新用户与领导关联
+        updateUserLeader(user);
         return userMapper.updateUser(user);
     }
 
@@ -268,7 +278,7 @@ public class SysUserServiceImpl implements ISysUserService
     /**
      * 修改用户头像
      * 
-     * @param userId 用户ID
+     * @param userName 用户姓名
      * @param avatar 头像地址
      * @return 结果
      */
@@ -367,7 +377,34 @@ public class SysUserServiceImpl implements ISysUserService
         userRoleMapper.deleteUserRoleByUserId(userId);
         // 删除用户与岗位表
         userPostMapper.deleteUserPostByUserId(userId);
+        // 删除用户与领导关联
+        userLeaderMapper.deleteUserLeaderByUserId(userId);
         return userMapper.deleteUserById(userId);
+    }
+
+    /**
+     * 新增用户与领导的关联
+     *
+     * @param user 用户对象
+     */
+
+    private void insertUserLeader(SysUser user) {
+        SysUserLeader userLeader = new SysUserLeader();
+        userLeader.setUserId(user.getUserId());
+        userLeader.setLeaderId(user.getLeaderId());
+        userLeaderMapper.insertUserLeader(userLeader);
+    }
+
+    /**
+     * 更新用户与领导的关联
+     *
+     * @param user 用户对象
+     */
+    private void updateUserLeader(SysUser user) {
+        SysUserLeader userLeader = new SysUserLeader();
+        userLeader.setUserId(user.getUserId());
+        userLeader.setLeaderId(user.getLeaderId());
+        userLeaderMapper.updateUserLeader(userLeader);
     }
 
     /**

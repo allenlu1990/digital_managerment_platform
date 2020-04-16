@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.system.mapper.SysUserLeaderMapper">
+
+  <resultMap type="SysUserLeader" id="SysUserLeaderResult">
+    <result property="userId"     column="user_id"      />
+    <result property="leaderId"   column="leader_id"     />
+  </resultMap>
+
+  <delete id="deleteUserLeaderByUserId" parameterType="Long">
+		delete from sys_user_leader where user_id=#{userId}
+	</delete>
+
+  <insert id="insertUserLeader" parameterType="SysUserLeader" >
+    insert into sys_user_leader(user_id, leader_id) values(#{userId},#{leaderId})
+  </insert>
+
+  <update id="updateUserLeader" parameterType="SysUserLeader">
+    update sys_user_leader set leader_id = #{leaderId} where user_id = #{userId}
+  </update>
+
+</mapper>

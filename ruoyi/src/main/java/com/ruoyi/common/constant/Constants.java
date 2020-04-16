@@ -98,4 +98,29 @@ public class Constants
      * 资源映射路径 前缀
      */
     public static final String RESOURCE_PREFIX = "/profile";
+
+    /**
+     * 绩效测评下属 rank
+     **/
+    public static final Integer SUBORDINATES_RANK = 1;
+
+    /**
+     * 绩效测评下属 rank
+     **/
+    public static final Integer LEADER_SUBORDINATES_RANK = 2;
+
+    /**
+     * 绩效测评下属 rank
+     **/
+    public static final Integer LEADER_RANK = 3;
+
+    /**
+     * 绩效测评下属 rank
+     **/
+    public static final Integer LEADER_LEADER_RANK = 4;
+
+    /**
+     * 绩效测评默认分数为100
+     **/
+    public static final double DEFAULT_SCORE = 100.0;
 }

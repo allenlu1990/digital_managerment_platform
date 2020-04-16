@@ -5,6 +5,8 @@ import java.util.List;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -24,7 +26,7 @@ public class SysUser extends BaseEntity
     private static final long serialVersionUID = 1L;
 
     /** 用户ID */
-    @Excel(name = "用户序号", cellType = ColumnType.NUMERIC, prompt = "用户编号")
+    @Excel(name = "序号", cellType = ColumnType.NUMERIC, prompt = "用户编号")
     private Long userId;
 
     /** 部门ID */
@@ -32,23 +34,41 @@ public class SysUser extends BaseEntity
     private Long deptId;
 
     /** 用户账号 */
-    @Excel(name = "登录名称")
+    @Excel(name = "姓名")
     private String userName;
 
     /** 用户昵称 */
-    @Excel(name = "用户名称")
     private String nickName;
 
     /** 用户邮箱 */
-    @Excel(name = "用户邮箱")
+    @Excel(name = "邮箱")
     private String email;
 
     /** 手机号码 */
-    @Excel(name = "手机号码")
+    @Excel(name = "联系方式")
     private String phonenumber;
 
+    /**工作地点**/
+    @Excel(name = "工作地点")
+    private String workAddress;
+
+    /**身份证ID**/
+    @Excel(name = "身份证")
+    private String identityCard;
+
+    /**出生日期**/
+    @Excel(name = "出身年月")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date birthday;
+
+    /**领导id**/
+    private Long leaderId;
+
+    /**领导用户名**/
+    private String leaderName;
+
     /** 用户性别 */
-    @Excel(name = "用户性别", readConverterExp = "0=男,1=女,2=未知")
+    @Excel(name = "性别", readConverterExp = "0=男,1=女,2=未知")
     private String sex;
 
     /** 用户头像 */
@@ -61,7 +81,7 @@ public class SysUser extends BaseEntity
     private String salt;
 
     /** 帐号状态（0正常 1停用） */
-    @Excel(name = "帐号状态", readConverterExp = "0=正常,1=停用")
+//    @Excel(name = "帐号状态", readConverterExp = "0=正常,1=停用")
     private String status;
 
     /** 删除标志（0代表存在 2代表删除） */
@@ -297,7 +317,47 @@ public class SysUser extends BaseEntity
     {
         this.postIds = postIds;
     }
-    
+
+    public String getWorkAddress() {
+        return workAddress;
+    }
+
+    public void setWorkAddress(String workAddress) {
+        this.workAddress = workAddress;
+    }
+
+    public String getIdentityCard() {
+        return identityCard;
+    }
+
+    public void setIdentityCard(String identityCard) {
+        this.identityCard = identityCard;
+    }
+
+    public Date getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(Date birthday) {
+        this.birthday = birthday;
+    }
+
+    public Long getLeaderId() {
+        return leaderId;
+    }
+
+    public void setLeaderId(Long leaderId) {
+        this.leaderId = leaderId;
+    }
+
+    public String getLeaderName() {
+        return leaderName;
+    }
+
+    public void setLeaderName(String leaderName) {
+        this.leaderName = leaderName;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)

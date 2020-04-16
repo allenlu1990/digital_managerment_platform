@@ -1,30 +1,6 @@
 <template>
   <div class="app-container">
     <el-row :gutter="20">
-      <!--部门数据-->
-      <!-- <el-col :span="4" :xs="24">
-        <div class="head-container">
-          <el-input
-            v-model="deptName"
-            placeholder="请输入部门名称"
-            clearable
-            size="small"
-            prefix-icon="el-icon-search"
-            style="margin-bottom: 20px"
-          />
-        </div>
-        <div class="head-container">
-          <el-tree
-            :data="deptOptions"
-            :props="defaultProps"
-            :expand-on-click-node="false"
-            :filter-node-method="filterNode"
-            ref="tree"
-            default-expand-all
-            @node-click="handleNodeClick"
-          />
-        </div>
-      </el-col> -->
       <!--用户数据-->
       <el-col :span="20" :xs="24">
         <el-form :model="queryParams" ref="queryForm" :inline="true" label-width="68px">
@@ -137,7 +113,8 @@
           <el-table-column label="用户编号" align="center" prop="userId" />
           <el-table-column label="用户名称" align="center" prop="userName" :show-overflow-tooltip="true" />
           <el-table-column label="用户昵称" align="center" prop="nickName" :show-overflow-tooltip="true" />
-          <!-- <el-table-column label="部门" align="center" prop="dept.deptName" :show-overflow-tooltip="true" /> -->
+          <el-table-column label="上级主管" align="center" prop="leaderName" />
+          <el-table-column label="部门" align="center" prop="dept.deptName" :show-overflow-tooltip="true" />
           <el-table-column label="手机号码" align="center" prop="phonenumber" width="120" />
           <el-table-column label="状态" align="center">
             <template slot-scope="scope">
@@ -206,11 +183,11 @@
               <el-input v-model="form.nickName" placeholder="请输入用户昵称" />
             </el-form-item>
           </el-col>
-          <!-- <el-col :span="12">
-            <el-form-item label="归属部门" prop="deptId">
+          <el-col :span="12">
+            <el-form-item label="归属部门">
               <treeselect v-model="form.deptId" :options="deptOptions" placeholder="请选择归属部门" />
             </el-form-item>
-          </el-col> -->
+          </el-col>
           <el-col :span="12">
             <el-form-item label="手机号码" prop="phonenumber">
               <el-input v-model="form.phonenumber" placeholder="请输入手机号码" maxlength="11" />
@@ -279,6 +256,33 @@
                   :disabled="item.status == 1"
                 ></el-option>
               </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="上级领导" prop="leaderId">
+              <el-select v-model="form.leaderId" placeholder="请选择" clearable filterable size="small">
+                <el-option
+                  v-for="item in leaderOptions"
+                  :key="item.userId"
+                  :label="item.userName"
+                  :value="item.userId"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="出身日期">
+              <el-date-picker value-format="yyyy-MM-dd HH:mm:ss" v-model="form.birthday" type="date" placeholder="选择出身年月日" size="small"></el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="身份证">
+              <el-input v-model="form.identityCard" placeholder="请输入身份证号" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="工作地点">
+              <el-input v-model="form.workAddress" placeholder="请输入工作地点" />
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -371,6 +375,8 @@ export default {
       postOptions: [],
       // 角色选项
       roleOptions: [],
+      // 领导人选
+      leaderOptions: [],
       // 表单参数
       form: {},
       defaultProps: {
@@ -480,6 +486,12 @@ export default {
       this.queryParams.deptId = data.id;
       this.getList();
     },
+    /** 查询leader列表 */
+    getLeaders() {
+      listUser().then(response => {
+        this.leaderOptions = response.rows;
+      });
+    },
     // 用户状态修改
     handleStatusChange(row) {
       let text = row.status === "0" ? "启用" : "停用";
@@ -511,6 +523,10 @@ export default {
         phonenumber: undefined,
         email: undefined,
         sex: undefined,
+        leaderId: undefined,
+        workAddress: undefined,
+        identityCard: undefined,
+        birthday: undefined,
         status: "0",
         remark: undefined,
         postIds: [],
@@ -539,6 +555,7 @@ export default {
     handleAdd() {
       this.reset();
       this.getTreeselect();
+      this.getLeaders();
       getUser().then(response => {
         this.postOptions = response.posts;
         this.roleOptions = response.roles;
@@ -551,6 +568,7 @@ export default {
     handleUpdate(row) {
       this.reset();
       this.getTreeselect();
+      this.getLeaders();
       const userId = row.userId || this.ids;
       getUser(userId).then(response => {
         this.form = response.data;

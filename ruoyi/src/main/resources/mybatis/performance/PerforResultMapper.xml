@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.performance.mapper.PerforResultMapper">
+
+  <resultMap type="PerforResult" id="PerforResult">
+    <result property="id" column="id"/>
+    <result property="result" column="result"/>
+    <result property="applicationId" column="application_id"/>
+    <result property="applicationTitle" column="application_title"/>
+    <result property="ownerId" column="owner_id"/>
+    <result property="ownerName" column="user_name"/>
+    <result property="applicationContent" column="application_content"/>
+    <result property="applicationDate" column="application_date"/>
+    <result property="applicationPercentage" column="application_percentage"/>
+    <result property="status" column="status"/>
+    <result property="createBy" column="create_by"/>
+    <result property="createTime" column="create_time"/>
+    <result property="updateBy" column="update_by"/>
+    <result property="updateTime" column="update_time"/>
+    <result property="remark" column="remark"/>
+  </resultMap>
+
+  <resultMap type="EvaluationResult" id="EvaluationResult">
+    <result property="approverId" column="approver_id"/>
+    <result property="approverName" column="approver_name"/>
+    <result property="result" column="result"/>
+    <result property="remark" column="remark"/>
+  </resultMap>
+
+  <sql id="selectResultVo">
+        select a.id, a.result, p.application_id, p.application_title, p.owner_id, p.application_content,p.application_date,p.application_percentage, p.status, p.create_by, p.create_time, p.update_by, p.update_time, p.remark,u.user_name
+          from performance_result_task a left join performance_application p on a.application_id =  p.application_id
+              left join sys_user u on p.owner_id = u.user_id
+  </sql>
+
+  <select id="selectResultList" parameterType="PerforResult" resultMap="PerforResult">
+    <include refid="selectResultVo"/>
+    <where>
+      <if test="ownerId != null and ownerId != ''">
+        AND p.owner_id = #{ownerId}
+      </if>
+      <if test="applicationDate != null ">
+        <![CDATA[   AND DATE_FORMAT(p.application_date, '%Y-%m') = DATE_FORMAT(#{applicationDate}, '%Y-%m')   ]]>
+      </if>
+    </where>
+
+  </select>
+
+  <insert id="insertResult" parameterType="Long">
+    insert into performance_result_task (application_id) values (#{0})
+  </insert>
+
+  <update id="updateResult" parameterType="PerforResult">
+    update performance_result_task
+    <set>
+      result = #{result}
+    </set>
+    where application_id = #{applicationId}
+  </update>
+
+  <delete id="deleteResultByApplicationId" parameterType="Long">
+    delete from performance_result_task where application_id = #{applicationId}
+  </delete>
+
+  <select id="selectEvaluationsByApplicationId" parameterType="Long" resultMap="EvaluationResult">
+    select p.approver_id,u.user_name as approver_name, p.result,p.remark from performance_approve_task p
+      left join sys_user u on p.approver_id=u.user_id
+    where application_id = #{applicationId}
+  </select>
+
+</mapper>
