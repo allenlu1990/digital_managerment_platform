@@ -30,7 +30,7 @@ public class SysUser extends BaseEntity
     private Long userId;
 
     /** 部门ID */
-    @Excel(name = "部门编号", type = Type.IMPORT)
+//    @Excel(name = "部门编号")
     private Long deptId;
 
     /** 用户账号 */
@@ -57,7 +57,7 @@ public class SysUser extends BaseEntity
     private String identityCard;
 
     /**出生日期**/
-    @Excel(name = "出身年月")
+    @Excel(name = "出生年月")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date birthday;
 

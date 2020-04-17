@@ -58,12 +58,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		    left join sys_dept d on u.dept_id = d.dept_id
 		    left join sys_user_role ur on u.user_id = ur.user_id
 		    left join sys_role r on r.role_id = ur.role_id
-		    left join (select u.user_name as leader_name, u.user_id as leader_id,l.user_id as user_id from sys_user_leader l left join sys_user u on l.leader_id = u.user_id)ul on ul.user_id = u.user_id
+		    left join (select u.user_name as leader_name, u.user_id as leader_id,l.user_id as user_id from sys_user_leader l left join sys_user u on l.leader_id = u.user_id where l.leader_id is not null)ul on ul.user_id = u.user_id
     </sql>
     
     <select id="selectUserList" parameterType="SysUser" resultMap="SysUserResult">
 			<include refid="selectUserVo"/>
-		where u.del_flag = '0'
+		where u.del_flag = '0' AND u.user_id != 0
 		<if test="userName != null and userName != ''">
 			AND u.user_name like concat('%', #{userName}, '%')
 		</if>
