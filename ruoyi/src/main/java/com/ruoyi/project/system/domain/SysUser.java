@@ -26,7 +26,7 @@ public class SysUser extends BaseEntity
     private static final long serialVersionUID = 1L;
 
     /** 用户ID */
-    @Excel(name = "序号", cellType = ColumnType.NUMERIC, prompt = "用户编号")
+//    @Excel(name = "序号", cellType = ColumnType.NUMERIC, prompt = "用户编号")
     private Long userId;
 
     /** 部门ID */
@@ -57,7 +57,7 @@ public class SysUser extends BaseEntity
     private String identityCard;
 
     /**出生日期**/
-    @Excel(name = "出生年月")
+    @Excel(name = "出生年月",dateFormat = "yyyy-MM-dd", type = Type.ALL)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date birthday;
 
@@ -65,6 +65,7 @@ public class SysUser extends BaseEntity
     private Long leaderId;
 
     /**领导用户名**/
+    @Excel(name = "上级主管", type = Type.EXPORT)
     private String leaderName;
 
     /** 用户性别 */
